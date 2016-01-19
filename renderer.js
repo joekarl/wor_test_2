@@ -124,10 +124,37 @@ const RENDERER = (() => {
     }
   };
 
+  const fillText = (text, x, y, fillStyle, font) => {
+    ctx2D.save();
+    if (font) ctx2D.font = font;
+    if (fillStyle) ctx2D.fillStyle = fillStyle;
+
+    ctx2D.fillText(text, x, y);
+
+    ctx2D.restore();
+  };
+
+  const drawImage = (img, x, y, width, height, srcX, srcY, srcWidth, srcHeight, flippedHorizontal, rotationAngle) => {
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    ctx2D.save();
+
+    ctx2D.translate(x, y);
+    if (rotationAngle) ctx2D.rotate(rotationAngle);
+    if (flippedHorizontal) ctx2D.scale(-1, 1);
+
+    ctx2D.drawImage(img, srcX, srcY, srcWidth, srcHeight, -halfWidth, -halfHeight, width, height);
+
+    ctx2D.restore();
+  };
+
   return {
     clearCanvas,
+    drawImage,
     drawLevel,
     fillRect,
+    fillText,
     strokeLine,
     strokeRect,
     WIDTH,

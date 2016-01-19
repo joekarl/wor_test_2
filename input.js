@@ -1,3 +1,11 @@
+const KEY_BINDINGS = {
+  UP:     38,
+  DOWN:   40,
+  LEFT:   37,
+  RIGHT:  39,
+  SPACE:  32,
+};
+
 function Input() {
   var i;
   this.pressed = new Array(255);
