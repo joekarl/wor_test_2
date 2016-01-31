@@ -4,7 +4,7 @@ const GAME_PLAY_MODE = function() {
   const WORLD_OFFSET = 20;
   const ENEMY_SPEED_TIMEOUT = 60/*fps*/ * 60/*seconds*/;
   const ENEMY_SPEED_INCREASE = 0.005;
-  const MAX_ENEMY_SPEED = 0.04;
+  const MAX_ENEMY_SPEED = 0.03;
   const INITIAL_ENEMY_SPEED = 0.01;
   const MAX_PLAYER_LIVES = 4;
   const RESOURCE_KEYS = {
@@ -32,10 +32,11 @@ const GAME_PLAY_MODE = function() {
     ENEMY_3: 1 << 6,
     MISSING: 1 << 7,
   };
+  const STARTING_LEVEL = 1;
 
   const init = (gameState) => {
     const modeState = new GamePlayModeState();
-    modeState.level = 0;
+    modeState.level = STARTING_LEVEL;
     modeState.playerLives = MAX_PLAYER_LIVES;
 
     modeState.enemySpeedTimeout = ENEMY_SPEED_TIMEOUT;
@@ -427,31 +428,33 @@ const GAME_PLAY_MODE = function() {
 
   const playingRender = (gameState) => {
     const modeState = gameState.modeState;
+    const levelPixelWidth = RENDERER.WIDTH;
+    const levelPixelHeight = RENDERER.HEIGHT * 0.9;
 
     // draw the game
     RENDERER.clearCanvas();
     RENDERER.drawLevel(
       WORLD_OFFSET,
       WORLD_OFFSET,
-      RENDERER.WIDTH - WORLD_OFFSET * 2,
-      RENDERER.HEIGHT - WORLD_OFFSET * 2,
+      levelPixelWidth - WORLD_OFFSET * 2,
+      levelPixelHeight - WORLD_OFFSET * 2,
       LEVELS[modeState.level],
       modeState.warpTimeout
     );
 
     const levelWidth = LEVELS[modeState.level][0].length;
     const levelHeight = LEVELS[modeState.level].length;
-    const entityWidth = RENDERER.WIDTH / levelWidth * 0.7;
-    const entityHeight = RENDERER.HEIGHT / levelHeight * 0.7;
-    const laserWidth = RENDERER.WIDTH / levelWidth * 0.3;
-    const laserHeight = RENDERER.HEIGHT / levelHeight * 0.1;
+    const entityWidth = levelPixelWidth / levelWidth * 0.7;
+    const entityHeight = levelPixelHeight / levelHeight * 0.7;
+    const laserWidth = levelPixelWidth / levelWidth * 0.3;
+    const laserHeight = levelPixelHeight / levelHeight * 0.1;
 
     // draw lives
     var lifeIndex = 1;
 
     const livesSprite = (new Sprite()).copy(modeState.sprites[SPRITE_KEYS.PLAYER_STANDING]);
     for (; lifeIndex < modeState.playerLives; ++lifeIndex) {
-      const worldXY = gridToWorldXY(new Vec2(levelWidth - 1, levelHeight - lifeIndex), LEVELS[modeState.level], WORLD_OFFSET, RENDERER.WIDTH, RENDERER.HEIGHT);
+      const worldXY = gridToWorldXY(new Vec2(levelWidth - 1, levelHeight - lifeIndex), LEVELS[modeState.level], WORLD_OFFSET, levelPixelWidth, levelPixelHeight);
       livesSprite.draw(worldXY.x, worldXY.y, entityWidth, entityHeight, new Vec2(-1, 0));
     }
 
@@ -460,7 +463,7 @@ const GAME_PLAY_MODE = function() {
         return;
       }
 
-      const worldXY = gridToWorldXY(e.position, LEVELS[modeState.level], WORLD_OFFSET, RENDERER.WIDTH, RENDERER.HEIGHT);
+      const worldXY = gridToWorldXY(e.position, LEVELS[modeState.level], WORLD_OFFSET, levelPixelWidth, levelPixelHeight);
       // draw entity body
       switch (e.entityType) {
         case ENTITY_TYPES.LASER:

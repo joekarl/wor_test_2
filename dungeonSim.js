@@ -3,7 +3,7 @@
 const DUNGEON_SIM = function() {
 
   const PLAYER_SPEED = 0.03;
-  const LASER_SPEED = 0.07;
+  const LASER_SPEED = 0.08;
   const MAX_WARP_TIMEOUT = 60/*fps*/ * 10/*seconds*/;
 
   const simDungeon = (modeState) => {
